@@ -1,0 +1,13 @@
+{
+  "locale": "ko",
+  "theme": "dark",
+  "font_scale": 1,
+  "show_deleted": false,
+  "primary_currency": "KRW",
+  "manual_exchange_rates": {
+    "USD_TO_KRW": 1328,
+    "KRW_TO_USD": 0.000753
+  },
+  "default_view": "timeline",
+  "sync_interval_minutes": 5
+}
