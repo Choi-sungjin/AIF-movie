@@ -95,6 +95,36 @@ export async function getDystopiaMovies(lang: string = "En"): Promise<Movie[]> {
   return fetchMovies(url, REVALIDATE.DISCOVER);
 }
 
+/** 역대 최고 평점 SF 영화 (랭킹용). */
+export async function getTopRatedSciFiMovies(lang: string = "En"): Promise<Movie[]> {
+  const locale = LANG_LOCALE[lang] ?? "en-US";
+  const url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${locale}&with_genres=878&sort_by=vote_average.desc&vote_count.gte=1000&${QUALITY_PARAMS}&page=1`;
+  return fetchMovies(url, REVALIDATE.DISCOVER);
+}
+
+/** 개봉 예정. language + region 매칭. */
+export async function getUpcomingMovies(lang: string = "En"): Promise<Movie[]> {
+  const locale = LANG_LOCALE[lang] ?? "en-US";
+  const region = LANG_REGION[lang] ?? "US";
+  const url = `${BASE_URL}/movie/upcoming?api_key=${API_KEY}&language=${locale}&region=${region}&page=1`;
+  const res = await fetch(url, { next: { revalidate: REVALIDATE.NOW_PLAYING } });
+  if (!res.ok) throw new Error(`TMDB API error: ${res.status}`);
+  const data: DiscoverResponse = await res.json();
+  return data.results ?? [];
+}
+
+/** 영화 검색. */
+export async function searchMovies(query: string, lang: string = "En"): Promise<Movie[]> {
+  const trimmed = query.trim();
+  if (!trimmed) return [];
+  const locale = LANG_LOCALE[lang] ?? "en-US";
+  const url = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=${locale}&query=${encodeURIComponent(trimmed)}&include_adult=false&page=1`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`TMDB API error: ${res.status}`);
+  const data: DiscoverResponse = await res.json();
+  return data.results ?? [];
+}
+
 const APPEND_RESPONSE = "credits,videos,similar,images";
 
 export async function getMovieDetails(

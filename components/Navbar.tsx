@@ -13,8 +13,9 @@ export default function Navbar() {
   const navItems = [
     { labelKey: "nav.home", href: "/" },
     { labelKey: "nav.movies", href: "/movies" },
-    { labelKey: "nav.series", href: "/series" },
-    { labelKey: "nav.myList", href: "/mylist" },
+    { labelKey: "nav.rankings", href: "/rankings" },
+    { labelKey: "nav.upcoming", href: "/upcoming" },
+    { labelKey: "nav.search", href: "/search" },
   ] as const;
 
   const setLanguage = (value: (typeof LANGUAGES)[number]) => {
@@ -22,7 +23,7 @@ export default function Navbar() {
   };
 
   const navLinkClass =
-    "text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200 w-24 text-center whitespace-nowrap";
+    "text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200 px-3 text-center whitespace-nowrap";
 
   const langButtonClass = (value: (typeof LANGUAGES)[number]) =>
     `w-9 py-1.5 rounded text-xs font-medium transition-colors flex-shrink-0 ${
@@ -44,7 +45,7 @@ export default function Navbar() {
 
           <div className="flex items-center gap-6 shrink-0">
             {/* 언어 선택: 고정 너비로 언어 변경 시 위치 유지 */}
-            <div className="hidden md:flex items-center gap-0.5 rounded-lg bg-gray-800/80 p-0.5 w-[7.25rem]">
+            <div className="hidden lg:flex items-center gap-0.5 rounded-lg bg-gray-800/80 p-0.5 w-[7.25rem]">
               {LANGUAGES.map((value) => (
                 <button
                   key={value}
@@ -59,7 +60,7 @@ export default function Navbar() {
             </div>
 
             {/* 네비 링크: 항목별 고정 너비로 텍스트 길이와 관계없이 위치 유지 */}
-            <div className="hidden md:flex items-center gap-2">
+            <div className="hidden lg:flex items-center gap-2">
               {navItems.map((item) => (
                 <Link
                   key={item.labelKey}
@@ -74,7 +75,7 @@ export default function Navbar() {
 
           <button
             type="button"
-            className="md:hidden p-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
+            className="lg:hidden p-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label={t("nav.menuOpen")}
           >
@@ -89,7 +90,7 @@ export default function Navbar() {
         </div>
 
         {menuOpen && (
-          <div className="md:hidden py-4 border-t border-white/10 animate-fadeIn">
+          <div className="lg:hidden py-4 border-t border-white/10 animate-fadeIn">
             <div className="flex items-center gap-1 mb-4">
               <span className="text-gray-500 text-xs w-12 shrink-0">{t("nav.language")}</span>
               <div className="flex gap-0.5 w-[7.25rem]">
