@@ -29,7 +29,7 @@ const REVALIDATE = {
 } as const;
 
 const QUALITY_PARAMS =
-  "include_adult=false&vote_count.gte=100&vote_average.gte=5.0&without_genres=99";
+  "include_adult=false&vote_average.gte=5.0&without_genres=99";
 
 interface DiscoverResponse {
   results: Movie[];
