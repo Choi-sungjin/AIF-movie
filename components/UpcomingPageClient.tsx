@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import { IMG_BASE, getUpcomingMovies } from "@/lib/tmdb";
 import type { Movie } from "@/types/movie";
 import { useTranslation } from "@/contexts/LanguageContext";
+import MovieModal from "./MovieModal";
 
 const DATE_LOCALE: Record<string, string> = {
   Kr: "ko-KR",
@@ -27,6 +27,7 @@ export default function UpcomingPageClient() {
   const { lang, t } = useTranslation();
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -83,10 +84,11 @@ export default function UpcomingPageClient() {
               const posterUrl = movie.poster_path ? `${IMG_BASE}${movie.poster_path}` : null;
               const releaseText = formatReleaseDate(movie.release_date, lang);
               return (
-                <Link
+                <button
                   key={movie.id}
-                  href={`/movie/${movie.id}`}
-                  className="group block rounded-lg overflow-hidden bg-netflix-dark transition-transform duration-300 hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-netflix-red focus:ring-offset-2 focus:ring-offset-black"
+                  type="button"
+                  onClick={() => setSelectedMovieId(movie.id)}
+                  className="group block text-left w-full rounded-lg overflow-hidden bg-netflix-dark transition-transform duration-300 hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-netflix-red focus:ring-offset-2 focus:ring-offset-black"
                 >
                   <div className="relative w-full aspect-[2/3] bg-gray-900">
                     {posterUrl ? (
@@ -117,12 +119,20 @@ export default function UpcomingPageClient() {
                       </p>
                     )}
                   </div>
-                </Link>
+                </button>
               );
             })}
           </div>
         )}
       </div>
+
+      {selectedMovieId !== null && (
+        <MovieModal
+          movieId={selectedMovieId}
+          onClose={() => setSelectedMovieId(null)}
+          onSelectMovie={setSelectedMovieId}
+        />
+      )}
     </main>
   );
 }

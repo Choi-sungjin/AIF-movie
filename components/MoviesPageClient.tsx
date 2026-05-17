@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import {
   IMG_BASE,
   getAllSciFiMovies,
@@ -12,6 +11,7 @@ import {
 } from "@/lib/tmdb";
 import type { Movie } from "@/types/movie";
 import { useTranslation } from "@/contexts/LanguageContext";
+import MovieModal from "./MovieModal";
 
 const TITLE_KEYS: Record<string, string> = {
   all: "moviesPage.sectionSf",
@@ -23,13 +23,14 @@ const TITLE_KEYS: Record<string, string> = {
 
 const CATEGORY_KEYS = ["all", "ai", "cyberpunk", "space", "dystopia"] as const;
 
-function MovieGridCard({ movie }: { movie: Movie }) {
+function MovieGridCard({ movie, onSelect }: { movie: Movie; onSelect: (id: number) => void }) {
   const posterUrl = movie.poster_path ? `${IMG_BASE}${movie.poster_path}` : null;
   const year = movie.release_date ? new Date(movie.release_date).getFullYear() : "";
 
   return (
-    <Link
-      href={`/movie/${movie.id}`}
+    <button
+      type="button"
+      onClick={() => onSelect(movie.id)}
       className="group relative block w-full aspect-[2/3] rounded-lg overflow-hidden bg-netflix-dark transition-transform duration-300 hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-netflix-red focus:ring-offset-2 focus:ring-offset-black"
     >
       {posterUrl ? (
@@ -51,7 +52,7 @@ function MovieGridCard({ movie }: { movie: Movie }) {
         <p className="text-yellow-400 text-xs">⭐ {movie.vote_average.toFixed(1)}</p>
         {year && <p className="text-gray-400 text-xs">{year}</p>}
       </div>
-    </Link>
+    </button>
   );
 }
 
@@ -69,6 +70,7 @@ export default function MoviesPageClient() {
   const { lang, t } = useTranslation();
   const [results, setResults] = useState<CategoryResults>(EMPTY_RESULTS);
   const [loading, setLoading] = useState(true);
+  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -150,7 +152,7 @@ export default function MoviesPageClient() {
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
                 {results[key].slice(0, 12).map((movie) => (
                   <div key={movie.id} className="relative">
-                    <MovieGridCard movie={movie} />
+                    <MovieGridCard movie={movie} onSelect={setSelectedMovieId} />
                   </div>
                 ))}
               </div>
@@ -158,6 +160,14 @@ export default function MoviesPageClient() {
           ))}
         </div>
       </div>
+
+      {selectedMovieId !== null && (
+        <MovieModal
+          movieId={selectedMovieId}
+          onClose={() => setSelectedMovieId(null)}
+          onSelectMovie={setSelectedMovieId}
+        />
+      )}
     </main>
   );
 }

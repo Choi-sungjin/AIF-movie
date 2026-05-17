@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { IMG_BASE, searchMovies } from "@/lib/tmdb";
 import type { Movie } from "@/types/movie";
 import { useTranslation } from "@/contexts/LanguageContext";
+import MovieModal from "./MovieModal";
 
 const DEBOUNCE_MS = 400;
 
@@ -15,6 +15,7 @@ export default function SearchPageClient() {
   const [results, setResults] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
 
   useEffect(() => {
     const tid = window.setTimeout(() => setDebouncedQuery(query.trim()), DEBOUNCE_MS);
@@ -102,9 +103,10 @@ export default function SearchPageClient() {
                   ? new Date(movie.release_date).getFullYear()
                   : "";
                 return (
-                  <Link
+                  <button
                     key={movie.id}
-                    href={`/movie/${movie.id}`}
+                    type="button"
+                    onClick={() => setSelectedMovieId(movie.id)}
                     className="group relative block w-full aspect-[2/3] rounded-lg overflow-hidden bg-netflix-dark transition-transform duration-300 hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-netflix-red focus:ring-offset-2 focus:ring-offset-black"
                   >
                     {posterUrl ? (
@@ -130,13 +132,21 @@ export default function SearchPageClient() {
                       )}
                       {year && <p className="text-gray-400 text-xs">{year}</p>}
                     </div>
-                  </Link>
+                  </button>
                 );
               })}
             </div>
           </>
         )}
       </div>
+
+      {selectedMovieId !== null && (
+        <MovieModal
+          movieId={selectedMovieId}
+          onClose={() => setSelectedMovieId(null)}
+          onSelectMovie={setSelectedMovieId}
+        />
+      )}
     </main>
   );
 }

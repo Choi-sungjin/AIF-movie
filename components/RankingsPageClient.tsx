@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { IMG_BASE, getTopRatedSciFiMovies } from "@/lib/tmdb";
 import type { Movie } from "@/types/movie";
 import { useTranslation } from "@/contexts/LanguageContext";
+import MovieModal from "./MovieModal";
 
 const TOP_N = 20;
 
@@ -12,6 +12,7 @@ export default function RankingsPageClient() {
   const { lang, t } = useTranslation();
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -60,9 +61,10 @@ export default function RankingsPageClient() {
                 ? new Date(movie.release_date).getFullYear()
                 : "";
               return (
-                <Link
+                <button
                   key={movie.id}
-                  href={`/movie/${movie.id}`}
+                  type="button"
+                  onClick={() => setSelectedMovieId(movie.id)}
                   className="group relative block w-full aspect-[2/3] rounded-lg overflow-hidden bg-netflix-dark transition-transform duration-300 hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-netflix-red focus:ring-offset-2 focus:ring-offset-black"
                 >
                   <div className="absolute top-0 left-0 z-10 bg-gradient-to-br from-netflix-red to-red-900 text-white font-bold text-lg md:text-xl w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-br-lg shadow-lg">
@@ -92,12 +94,20 @@ export default function RankingsPageClient() {
                     </p>
                     {year && <p className="text-gray-400 text-xs">{year}</p>}
                   </div>
-                </Link>
+                </button>
               );
             })}
           </div>
         )}
       </div>
+
+      {selectedMovieId !== null && (
+        <MovieModal
+          movieId={selectedMovieId}
+          onClose={() => setSelectedMovieId(null)}
+          onSelectMovie={setSelectedMovieId}
+        />
+      )}
     </main>
   );
 }
